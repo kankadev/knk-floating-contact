@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KNK Floating Contact
  * Description: Floating contact icons for email and phone with hover effects
- * Version: 1.1.0
+ * Version: 1.2.0
  * Plugin URI: https://github.com/kankadev/knk-floating-contact
  * Update URI: https://github.com/kankadev/knk-floating-contact
  * Requires at least: 5.8
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('KNK_FLOATING_CONTACT_VERSION', '1.1.0');
+define('KNK_FLOATING_CONTACT_VERSION', '1.2.0');
 define('KNK_FLOATING_CONTACT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KNK_FLOATING_CONTACT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -67,6 +67,10 @@ class KNK_Floating_Contact {
         );
     }
 
+    private function channel_enabled($channel) {
+        return in_array(get_option('knk_floating_contact_' . $channel . '_enabled', '1'), array(true, 1, '1'), true);
+    }
+
     public function render_floating_icons() {
         $email = get_option('knk_floating_contact_email', '');
         $email_svg = get_option('knk_floating_contact_email_svg', '');
@@ -80,15 +84,20 @@ class KNK_Floating_Contact {
         // Make booking text translatable with WPML
         $booking_text = apply_filters('wpml_translate_single_string', $booking_text, 'knk-floating-contact', 'booking_text');
 
-        // Only render if at least email, phone or booking is set
-        if (empty($email) && empty($phone_international) && empty($booking_url)) {
+        // Missing flags preserve pre-1.2 configurations without writing defaults.
+        $show_email = $this->channel_enabled('email') && !empty($email);
+        $show_phone = $this->channel_enabled('phone') && !empty($phone_international);
+        $show_booking = $this->channel_enabled('booking') && !empty($booking_url);
+
+        // Do not leave an empty floating wrapper.
+        if (!$show_email && !$show_phone && !$show_booking) {
             return;
         }
 
         echo '<div id="knk-floating-contact">';
 
         // Email icon
-        if (!empty($email)) {
+        if ($show_email) {
             echo '<div class="knk-floating-item knk-floating-email">';
             echo '<a href="mailto:' . esc_attr($email) . '" class="knk-floating-link" aria-label="' . esc_attr($email) . '">';
             echo '<div class="knk-floating-icon">';
@@ -105,7 +114,7 @@ class KNK_Floating_Contact {
         }
 
         // Phone icon
-        if (!empty($phone_international)) {
+        if ($show_phone) {
             $display_phone = !empty($phone) ? $phone : $phone_international;
             echo '<div class="knk-floating-item knk-floating-phone">';
             echo '<a href="tel:' . esc_attr($phone_international) . '" class="knk-floating-link" aria-label="' . esc_attr($display_phone) . '">';
@@ -123,7 +132,7 @@ class KNK_Floating_Contact {
         }
 
         // Booking icon
-        if (!empty($booking_url)) {
+        if ($show_booking) {
             echo '<div class="knk-floating-item knk-floating-booking">';
             echo '<a href="' . esc_url($booking_url) . '" class="knk-floating-link" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr($booking_text) . '">';
             echo '<div class="knk-floating-icon">';

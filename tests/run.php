@@ -26,7 +26,13 @@ function restore_current_blog() { $GLOBALS['blog_id']=array_pop($GLOBALS['stack'
 function plugins_url($path='',$file='') { return 'https://example.org/plugins/knk-floating-contact'; }
 function wp_normalize_path($path) { return str_replace('\\', '/', $path); }
 function is_admin() { return false; }
-function current_user_can($cap) { return false; }
+function current_user_can($cap) { return $GLOBALS['can_manage'] ?? false; }
+function register_setting($group,$name,$args) { $GLOBALS['registered'][$name]=$args; }
+function add_settings_section($id,$title,$callback,$page) { $GLOBALS['sections'][$page]=$id; }
+function add_settings_field($id,$title,$callback,$page,$section,$args) { $GLOBALS['fields'][$id]=array($page,$section,$args); }
+function settings_fields($group) { echo '<input name="option_page" value="'.esc_attr($group).'" />'; }
+function do_settings_sections($page) { foreach ($GLOBALS['fields'] as $field) { if ($field[0]===$page) { (new KNK_Floating_Contact_Admin_Settings())->render_field($field[2]); } } }
+function submit_button() { echo '<button>Save</button>'; }
 function wp_remote_get($url,$args) { $GLOBALS['requests']++; return $GLOBALS['http']; }
 function wp_remote_retrieve_response_code($r) { return $r['code']; }
 function wp_remote_retrieve_body($r) { return $r['body']; }
@@ -65,6 +71,26 @@ check(strpos(KNK_Floating_Contact_SVG::sanitize('<svg><style>.x {fill:url(https:
 $admin=new KNK_Floating_Contact_Admin_Settings();
 ob_start();$admin->render_settings_page();check(ob_get_clean()==='','settings page capability gate');
 $base='knk_floating_contact_';
+$admin->init_settings();
+check(count($GLOBALS['registered'])===12,'all old and new options registered');
+check(count($GLOBALS['sections'])===4,'three contact groups plus uninstall');
+foreach (array('email','phone','booking') as $channel) {
+    $id=$base.$channel.'_enabled';
+    $field=$GLOBALS['fields'][$id];
+    check($field[0]==='knk-floating-contact-'.$channel,'toggle in its contact group '.$channel);
+    ob_start();$admin->render_field($field[2]);$output=ob_get_clean();
+    check(strpos($output,'checked="checked"')!==false,'missing toggle defaults enabled '.$channel);
+    check(strpos($output,'type="hidden"')!==false && strpos($output,'value="0"')!==false,'unchecked toggle submitted '.$channel);
+}
+foreach (array(false,0,'0','','false',array('1'),null) as $value) { check($admin->sanitize_checkbox($value)==='0','checkbox rejects non-true input'); }
+foreach (array(true,1,'1') as $value) { check($admin->sanitize_checkbox($value)==='1','checkbox accepts explicit true'); }
+$GLOBALS['can_manage']=true;
+ob_start();$admin->render_settings_page();$form=ob_get_clean();$GLOBALS['can_manage']=false;
+check(substr_count($form,'<section class="postbox"')===4,'settings groups visible');
+check(strpos($form,'id="knk_floating_contact_booking_url"')!==false && strpos($form,'rows="3"')!==false && strpos($form,'wrap="soft"')!==false,'long booking URL wraps in textarea');
+check(strpos($form,'regular-text')===false,'text fields use available width');
+check(strpos($form,'disabled=')===false,'hidden contacts remain editable');
+
 $opts=array('email'=>'hello@example.org','email_svg'=>$svg,'phone'=>'0123 456','phone_international'=>'+49123456','phone_svg'=>$svg,'booking_url'=>'https://example.org/book','booking_svg'=>$svg,'booking_text'=>'Book <now>','delete_on_uninstall'=>'0');
 foreach ($opts as $key=>$value) { $GLOBALS['sites'][1][$base.$key]=$value; }
 $before=$GLOBALS['sites'];
@@ -77,6 +103,19 @@ check(strpos($html,'href="https://example.org/book"')!==false,'booking target');
 check(strpos($html,'Book &lt;now&gt;')!==false,'booking text escaped');
 check(substr_count($html,'aria-label=')===3,'mobile accessible names');
 check($GLOBALS['sites']===$before,'load/init/render preserve all options');
+check(!class_exists('SitePress') && !has_filter('wpml_translate_single_string'),'WPML is absent in default rendering test');
+check(strpos($html,'Book &lt;now&gt;')!==false,'without WPML stored booking text is used');
+for ($mask=0;$mask<8;$mask++) {
+    foreach (array('email','phone','booking') as $bit=>$channel) { $GLOBALS['sites'][1][$base.$channel.'_enabled']=(string)(($mask>>$bit)&1); }
+    $configured=$GLOBALS['sites'];
+    ob_start();$plugin->render_floating_icons();$visible=ob_get_clean();
+    foreach (array('email','phone','booking') as $bit=>$channel) {
+        check((strpos($visible,'knk-floating-'.$channel.'"')!==false)===(bool)(($mask>>$bit)&1),'visibility '.$mask.' '.$channel);
+    }
+    check($GLOBALS['sites']===$configured,'visibility preserves settings '.$mask);
+    if ($mask===0) { check($visible==='','all hidden renders no wrapper'); }
+}
+$GLOBALS['sites']=$before;
 add_filter('wpml_translate_single_string',function($text,$context,$name) { return $context==='knk-floating-contact' && $name==='booking_text' ? 'Translated booking' : $text; },10,3);
 ob_start();$plugin->render_floating_icons();check(strpos(ob_get_clean(),'Translated booking')!==false,'existing WPML contract');
 remove_all_filters('wpml_translate_single_string');
@@ -104,6 +143,7 @@ delete_site_transient($u::CACHE);$GLOBALS['http']=array('code'=>403,'body'=>'{}'
 delete_site_transient($u::CACHE);$GLOBALS['http']=new WP_Error('network','offline');check(!$u->release(),'network failure safe');
 require dirname(__DIR__).'/uninstall.php';
 check($GLOBALS['sites']===$before,'uninstall default preserves options');
+foreach (array('email','phone','booking') as $channel) { $GLOBALS['sites'][1][$base.$channel.'_enabled']='0'; $opts[$channel.'_enabled']='0'; }
 $GLOBALS['sites'][1][$base.'delete_on_uninstall']='1';$GLOBALS['sites'][1]['unrelated']='keep';
 knk_floating_contact_uninstall_site();check(get_option('unrelated')==='keep','uninstall leaves unrelated option');
 foreach (array_keys($opts) as $key) { check(get_option($base.$key,null)===null,'opted-in deletion '.$key); }
