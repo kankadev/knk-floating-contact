@@ -1,3 +1,14 @@
+# 1.3.0
+
+- Updatesichere Designoptionen für Hintergrund, Hover-Hintergrund, Textfarbe,
+  optionale SVG-Icon-Farbe und Eckenrundung.
+- WordPress-Farbauswahl nur auf der eigenen Einstellungsseite.
+- Bisheriges Design ohne eigene Angaben unverändert; keine Migration oder Resets.
+- Optionale Icon-Farbe erhält Geometrie, Transparenz und Verläufe; gespeicherte SVGs bleiben unverändert.
+- Footer mit kanka.dev-Link und aktueller Plugin-Version.
+- Vor Updates individuell geänderter Plugin-Dateien die bisherigen Anpassungen sichern
+  und in Einstellungen beziehungsweise Child-Theme übertragen.
+
 # 1.2.0
 
 - Einstellungen nach E-Mail, Telefon und Buchung gruppiert.

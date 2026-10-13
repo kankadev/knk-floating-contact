@@ -4,7 +4,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) { exit; }
 
 function knk_floating_contact_uninstall_site() {
     if (!in_array(get_option('knk_floating_contact_delete_on_uninstall', false), array(true, 1, '1'), true)) { return; }
-    foreach (array('email_enabled','phone_enabled','booking_enabled','email','email_svg','phone','phone_international','phone_svg','booking_url','booking_svg','booking_text','delete_on_uninstall') as $name) {
+    foreach (array('color_background','color_hover_background','color_text','color_icon','radius','email_enabled','phone_enabled','booking_enabled','email','email_svg','phone','phone_international','phone_svg','booking_url','booking_svg','booking_text','delete_on_uninstall') as $name) {
         delete_option('knk_floating_contact_' . $name);
     }
     do_action('wpml_unregister_single_string', 'knk-floating-contact', 'booking_text');

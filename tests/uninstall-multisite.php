@@ -1,7 +1,7 @@
 <?php
 define('WP_UNINSTALL_PLUGIN', 'knk-floating-contact/knk-floating-contact.php');
 $blog=1;$stack=array();$sites=array();$queries=0;
-for ($i=1;$i<=205;$i++) { $sites[$i]=array('knk_floating_contact_email'=>'site'.$i.'@example.org','knk_floating_contact_delete_on_uninstall'=>in_array($i,array(2,101,205),true)?'1':'0','knk_floating_contact_email_enabled'=>'0','knk_floating_contact_phone_enabled'=>'1','knk_floating_contact_booking_enabled'=>'0','unrelated'=>'keep'); }
+for ($i=1;$i<=205;$i++) { $sites[$i]=array('knk_floating_contact_email'=>'site'.$i.'@example.org','knk_floating_contact_delete_on_uninstall'=>in_array($i,array(2,101,205),true)?'1':'0','knk_floating_contact_email_enabled'=>'0','knk_floating_contact_phone_enabled'=>'1','knk_floating_contact_booking_enabled'=>'0','knk_floating_contact_color_background'=>'#123456','knk_floating_contact_color_hover_background'=>'#abcdef','knk_floating_contact_color_text'=>'#fff','knk_floating_contact_color_icon'=>'#123','knk_floating_contact_radius'=>'12','unrelated'=>'keep'); }
 function is_multisite() { return true; }
 function get_sites($args) { global $sites,$queries;$queries++;return array_slice(array_keys($sites),$args['offset'],$args['number']); }
 function get_option($name,$default=false) { global $sites,$blog;return $sites[$blog][$name]??$default; }
@@ -12,7 +12,7 @@ function delete_site_transient($name) { if ($name!=='knk_floating_contact_releas
 function do_action(...$args) {}
 require dirname(__DIR__).'/uninstall.php';
 for ($i=1;$i<=205;$i++) {
-    foreach (array('email_enabled','phone_enabled','booking_enabled') as $key) {
+    foreach (array('email_enabled','phone_enabled','booking_enabled','color_background','color_hover_background','color_text','color_icon','radius') as $key) {
         if (isset($sites[$i]['knk_floating_contact_'.$key])===in_array($i,array(2,101,205),true)) { fwrite(STDERR,"FAIL flag $i $key\n");exit(1); }
     }
     if (isset($sites[$i]['knk_floating_contact_email'])===in_array($i,array(2,101,205),true) || $sites[$i]['unrelated']!=='keep') { fwrite(STDERR,"FAIL site $i\n");exit(1); }

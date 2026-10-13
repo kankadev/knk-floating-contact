@@ -18,17 +18,17 @@ Automatische Updates lassen sich pro Installation in der WordPress-Pluginliste e
 
 Alle bisherigen `knk_floating_contact_*`-Optionsnamen bleiben bestehen. Installation, Aktivierung, Deaktivierung und Updates schreiben keine Standardwerte über vorhandene Einstellungen. Das ZIP enthält ausschließlich Programmdateien. Individuelle E-Mail-Adressen, Rufnummern, Buchungslinks, Texte und Icons bleiben in der jeweiligen WordPress-Datenbank.
 
-Nur eine tatsächliche Deinstallation mit aktivierter Option „Daten beim Deinstallieren löschen“ entfernt die zwölf eigenen Optionen. Standard ist **Daten behalten**. In Multisite wird die Zustimmung jeder einzelnen Site berücksichtigt. Änderungen direkt in Plugin-Dateien werden bei Updates ersetzt: Anpassungen gehören in die Einstellungen, ein Child-Theme oder ein separates Erweiterungsplugin.
+Nur eine tatsächliche Deinstallation mit aktivierter Option „Daten beim Deinstallieren löschen“ entfernt die 17 eigenen Optionen. Standard ist **Daten behalten**. In Multisite wird die Zustimmung jeder einzelnen Site berücksichtigt. Änderungen direkt in Plugin-Dateien werden bei Updates ersetzt: Anpassungen gehören in die Einstellungen, ein Child-Theme oder ein separates Erweiterungsplugin.
 
 SVGs werden beim Speichern und Ausgeben auf passive Grafikformen begrenzt. Skripte, Event-Handler, eingebettetes HTML und externe Referenzen sind nicht erlaubt. Einfache Farbregeln wie `.cls-1 { fill: #fff; }` werden in sichere SVG-Attribute umgewandelt; Style-Blöcke werden nicht ausgegeben. Bei vorhandenen komplexen SVGs vor dem Update die Darstellung auf einer Testinstanz prüfen. Die gespeicherten Werte werden beim Update nicht umgeschrieben.
 
 ## Entwicklung und Veröffentlichung
 
-- SCSS-Quelle: `assets/css/floating-contact.scss`. CSS, bestehende Klassennamen und JavaScript sind auch für 1.2.0 unverändert. Der Release-Build kompiliert kein Sass.
+- SCSS-Quelle: `assets/css/floating-contact.scss`. Die bestehenden Frontend-Klassennamen und das Frontend-JavaScript bleiben erhalten. Designoptionen verwenden CSS-Variablen; SCSS und kompiliertes CSS müssen gemeinsam gepflegt werden. Der Release-Build kompiliert kein Sass.
 - Version im Plugin-Header, der Versionskonstante und `readme.txt` gemeinsam erhöhen; Änderungen im Changelog und in den Release Notes beschreiben.
 - Mindestversionen bei Änderungen auch im Updater anpassen; Migrationen müssen bestehende Optionen erhalten.
 - PHP-Syntax prüfen und `php tests/run.php /pfad/zu/wordpress` ausführen. Der Test benutzt echte WordPress-KSES-Funktionen, aber keine Datenbank.
-- `python scripts/build-release.py v1.2.0` erstellt das installierbare ZIP und SHA256SUMS aus einer festen Dateiauswahl.
+- `python scripts/build-release.py v1.3.0` erstellt das installierbare ZIP und SHA256SUMS aus einer festen Dateiauswahl.
 - Der GitHub-Workflow „Release“ läuft manuell mit einem Tag wie `v1.1.1` und dem vollständigen geprüften Commit-SHA auf `main`. Er testet, baut das ZIP und erstellt zunächst einen Release-Entwurf. Bestehende Tags werden nicht überschrieben.
 - ZIP und Versionsstand prüfen, Release Notes fertigstellen und den Entwurf veröffentlichen. Erst ein veröffentlichtes stabiles Release wird von den Installationen angeboten. Ein Commit auf `main` allein verteilt kein Update.
 - Vor Veröffentlichung immer Geheimnisprüfung und Diff-Review durchführen. Keine Site-Backups, Datenbankexporte oder echten Kundenoptionen in dieses Repository aufnehmen.
@@ -39,7 +39,7 @@ Vor Updates die Plugin-Dateien und Datenbank sichern. Für einen Rückfall das v
 
 ## Bekannte Grenzen
 
-Die vorhandene Gestaltung enthält feste Farben, Breiten und Positionen. Tastaturfokus erweitert die Texte bislang nicht wie Maus-Hover; Bewegungsreduktion und Reaktion auf nachträgliche Größenänderungen sind weitere mögliche Verbesserungen. Auch Version 1.2.0 erhält bewusst das bisherige Erscheinungsbild. Der eigene spätere Funktionsausbau ist davon unabhängig.
+Breiten und Positionen sind weiterhin fest vorgegeben. Farben und Eckenrundung sind ab 1.3.0 einstellbar. Tastaturfokus erweitert die Texte bislang nicht wie Maus-Hover; Bewegungsreduktion und Reaktion auf nachträgliche Größenänderungen sind weitere mögliche Verbesserungen. Auch Version 1.2.0 erhält bewusst das bisherige Erscheinungsbild. Der eigene spätere Funktionsausbau ist davon unabhängig.
 
 Lizenz: GPL-2.0-or-later.
 
@@ -61,3 +61,33 @@ Die SVG-Behandlung aus 1.1.0 wurde für 1.2.0 nicht verändert. Die vorhandenen
 Icon-Positionen bleiben ebenfalls erhalten, wenn einzelne Kontakte ausgeblendet sind.
 Multisite bleibt im bestehenden Umfang unterstützt; die Tests der Deinstallation
 prüfen die Löschfreigabe je Site, ersetzen aber keine vollständige Netzwerkabnahme.
+
+
+## Updatesichere Gestaltung ab 1.3.0
+
+Die Gruppe **Gestaltung** steuert Hintergrund, Desktop-Hover-Hintergrund, Textfarbe,
+optionale SVG-Icon-Farbe und Eckenrundung gemeinsam für alle drei Kontaktarten.
+Farben können per WordPress-Farbauswahl oder als Hexwert eingegeben werden.
+Leere Felder verwenden das bisherige Standarddesign: Hintergrund `#6C1300`,
+Hover `#74675C`, Text weiß, eckige Form. Die ursprünglichen SVG-Farben bleiben
+erhalten, solange die optionale Icon-Farbe leer ist. „Leeren“ und Speichern
+stellt den jeweiligen Standard wieder her, ohne Kontaktdaten zu löschen.
+
+Die Icon-Farbe ersetzt ausschließlich deckende explizite SVG-Farbflächen und Linien
+mit Hex- oder benannten Farben; `currentColor` übernimmt ebenfalls die Auswahl.
+Unbemalte Flächen (`none`), Transparenz, Alpha-Farbwerte, Farbverläufe und Geometrie
+bleiben erhalten. Andere komplexe Farbdefinitionen bleiben unverändert. Emojis
+lassen sich auf diesem Weg nicht umfärben. Die gewählte Farbe wird nur bei der Ausgabe angewendet; Leeren stellt die Originalfarben wieder her.
+Beim Speichern greift weiterhin der vorhandene SVG-Sicherheitsfilter. Er kann beispielsweise einfache Farbklassen in gleichwertige Attribute umwandeln.
+
+Die Gestaltung liegt in der jeweiligen WordPress-Datenbank und bleibt bei Updates,
+Deaktivieren und Reaktivieren erhalten. Kein Aktivierungs-/Update-Reset.
+
+**Vor dem ersten Update bisher manuell angepasster Installationen:** Plugin-Ordner
+sichern und eigene SCSS-/CSS-Werte in die neuen Einstellungen übertragen.
+Beliebige vorhandene Dateiänderungen werden nicht automatisch importiert und würden
+beim Update ersetzt. Weitergehende Anpassungen gehören in ein Child-Theme oder
+ein eigenes Erweiterungsplugin, nicht in diesen Plugin-Ordner.
+
+Der Footer der Einstellungsseite zeigt einen Link zu kanka.dev und die tatsächlich
+geladene Plugin-Version. Er lädt keine externen Schriftarten, Bilder oder Skripte.

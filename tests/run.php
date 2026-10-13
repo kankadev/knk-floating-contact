@@ -32,6 +32,8 @@ function add_settings_section($id,$title,$callback,$page) { $GLOBALS['sections']
 function add_settings_field($id,$title,$callback,$page,$section,$args) { $GLOBALS['fields'][$id]=array($page,$section,$args); }
 function settings_fields($group) { echo '<input name="option_page" value="'.esc_attr($group).'" />'; }
 function do_settings_sections($page) { foreach ($GLOBALS['fields'] as $field) { if ($field[0]===$page) { (new KNK_Floating_Contact_Admin_Settings())->render_field($field[2]); } } }
+function wp_enqueue_style(...$args) { $GLOBALS['enqueued'][]=$args; }
+function wp_enqueue_script(...$args) { $GLOBALS['enqueued'][]=$args; }
 function submit_button() { echo '<button>Save</button>'; }
 function wp_remote_get($url,$args) { $GLOBALS['requests']++; return $GLOBALS['http']; }
 function wp_remote_retrieve_response_code($r) { return $r['code']; }
@@ -72,8 +74,8 @@ $admin=new KNK_Floating_Contact_Admin_Settings();
 ob_start();$admin->render_settings_page();check(ob_get_clean()==='','settings page capability gate');
 $base='knk_floating_contact_';
 $admin->init_settings();
-check(count($GLOBALS['registered'])===12,'all old and new options registered');
-check(count($GLOBALS['sections'])===4,'three contact groups plus uninstall');
+check(count($GLOBALS['registered'])===17,'all old and new options registered');
+check(count($GLOBALS['sections'])===5,'contact groups plus design and uninstall');
 foreach (array('email','phone','booking') as $channel) {
     $id=$base.$channel.'_enabled';
     $field=$GLOBALS['fields'][$id];
@@ -86,11 +88,35 @@ foreach (array(false,0,'0','','false',array('1'),null) as $value) { check($admin
 foreach (array(true,1,'1') as $value) { check($admin->sanitize_checkbox($value)==='1','checkbox accepts explicit true'); }
 $GLOBALS['can_manage']=true;
 ob_start();$admin->render_settings_page();$form=ob_get_clean();$GLOBALS['can_manage']=false;
-check(substr_count($form,'<section class="postbox"')===4,'settings groups visible');
+check(substr_count($form,'<section class="postbox"')===5,'settings groups visible');
 check(strpos($form,'id="knk_floating_contact_booking_url"')!==false && strpos($form,'rows="3"')!==false && strpos($form,'wrap="soft"')!==false,'long booking URL wraps in textarea');
 check(strpos($form,'regular-text')===false,'text fields use available width');
 check(strpos($form,'disabled=')===false,'hidden contacts remain editable');
 
+check(strpos($form,'https://kanka.dev/')!==false && strpos($form,'Version '.KNK_FLOATING_CONTACT_VERSION)!==false,'developer footer uses actual version');
+$GLOBALS['enqueued']=array();$admin->enqueue_assets('settings_page_other');
+check(!$GLOBALS['enqueued'],'color picker absent on unrelated admin pages');
+$admin->enqueue_assets('settings_page_knk-floating-contact');
+check(count($GLOBALS['enqueued'])===2 && $GLOBALS['enqueued'][0][0]==='wp-color-picker','native picker only on own page');
+check(KNK_Floating_Contact_Design::style()==='','no design options means no inline overrides');
+foreach (array('red','url(https://example.org)','</style><script>bad</script>','#12345678','#1234',array(),'#12','var(--evil)',null) as $value) {
+    check(KNK_Floating_Contact_Design::sanitize_color($value)==='','reject non-hex or unsafe color');
+}
+check(KNK_Floating_Contact_Design::sanitize_color(' #ABc123 ')==='#abc123','normalize safe color');
+check(KNK_Floating_Contact_Design::sanitize_color('#ABC')==='#abc','short hex color accepted');
+foreach (array('-1','12px','4.5',array(),true,'999','1;position:fixed') as $value) { check(KNK_Floating_Contact_Design::sanitize_radius($value)==='','invalid radius rejected'); }
+check(KNK_Floating_Contact_Design::sanitize_radius('31')==='30','radius clamped');
+check(KNK_Floating_Contact_Design::sanitize_radius('0')==='0','zero radius retained');
+foreach (array('color_background'=>'#123456','color_hover_background'=>'#abcdef','color_text'=>'#fedcba','color_icon'=>'#12ab34','radius'=>'12') as $key=>$value) { $GLOBALS['sites'][1][$base.$key]=$value; }
+check(KNK_Floating_Contact_Design::style()==='--knk-contact-background:#123456;--knk-contact-hover-background:#abcdef;--knk-contact-text:#fedcba;--knk-contact-icon:#12ab34;--knk-contact-radius:12px','validated CSS variables');
+$paint='<svg viewBox="0 0 24 24"><g fill="none" stroke="#fff"><path fill="transparent" d="M0 0"/><path fill="url(#gradient)" opacity="0.5" d="M1 1"/><path fill="#ffffff80" stroke="none" d="M2 2"/><path fill="#fff" d="M3 3"/></g></svg>';
+$painted=KNK_Floating_Contact_Design::svg($paint);
+foreach (array('fill="none"','fill="transparent"','fill="url(#gradient)"','fill="#ffffff80"','stroke="none"','opacity="0.5"','d="M3 3"') as $needle) { check(strpos($painted,$needle)!==false,'custom icon preserves '.$needle); }
+check(strpos($painted,'stroke="#12ab34"')!==false && strpos($painted,'fill="#12ab34"')!==false,'solid stroke and fill recolored');
+check(strpos(KNK_Floating_Contact_Design::svg("<svg><path fill='#fff' d='M0 0'/></svg>"),'fill="#12ab34"')!==false,'single quoted SVG paint recolored');
+$GLOBALS['sites'][1][$base.'color_icon']='';
+check(KNK_Floating_Contact_Design::svg($paint)===KNK_Floating_Contact_SVG::sanitize($paint),'cleared icon color restores original SVG');
+foreach (array('color_background','color_hover_background','color_text','color_icon','radius') as $key) { unset($GLOBALS['sites'][1][$base.$key]); }
 $opts=array('email'=>'hello@example.org','email_svg'=>$svg,'phone'=>'0123 456','phone_international'=>'+49123456','phone_svg'=>$svg,'booking_url'=>'https://example.org/book','booking_svg'=>$svg,'booking_text'=>'Book <now>','delete_on_uninstall'=>'0');
 foreach ($opts as $key=>$value) { $GLOBALS['sites'][1][$base.$key]=$value; }
 $before=$GLOBALS['sites'];
@@ -144,6 +170,7 @@ delete_site_transient($u::CACHE);$GLOBALS['http']=new WP_Error('network','offlin
 require dirname(__DIR__).'/uninstall.php';
 check($GLOBALS['sites']===$before,'uninstall default preserves options');
 foreach (array('email','phone','booking') as $channel) { $GLOBALS['sites'][1][$base.$channel.'_enabled']='0'; $opts[$channel.'_enabled']='0'; }
+foreach (array('color_background','color_hover_background','color_text','color_icon','radius') as $key) { $GLOBALS['sites'][1][$base.$key]='test'; $opts[$key]='test'; }
 $GLOBALS['sites'][1][$base.'delete_on_uninstall']='1';$GLOBALS['sites'][1]['unrelated']='keep';
 knk_floating_contact_uninstall_site();check(get_option('unrelated')==='keep','uninstall leaves unrelated option');
 foreach (array_keys($opts) as $key) { check(get_option($base.$key,null)===null,'opted-in deletion '.$key); }

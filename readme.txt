@@ -4,7 +4,7 @@ Tags: contact, floating, icons, email, phone
 Requires at least: 5.8
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,13 @@ Updates and deactivation preserve all per-site settings. Actual uninstall delete
 SVG icons accept passive vector shapes, not scripts, event handlers, styles or external resources.
 
 == Changelog ==
+
+= 1.3.0 =
+* Updatesichere Farben und Eckenrundung pro Website über die Einstellungen.
+* Bisheriges Design bleibt ohne eigene Farbwahl unverändert.
+* Optionale SVG-Farbe mit Erhalt von Transparenz und Farbverläufen.
+* Entwicklerlink und aktuelle Version auf der Einstellungsseite.
+
 
 = 1.2.0 =
 * Getrennte Einstellungsgruppen für E-Mail, Telefon und Buchung.

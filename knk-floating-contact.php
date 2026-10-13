@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KNK Floating Contact
  * Description: Floating contact icons for email and phone with hover effects
- * Version: 1.2.0
+ * Version: 1.3.0
  * Plugin URI: https://github.com/kankadev/knk-floating-contact
  * Update URI: https://github.com/kankadev/knk-floating-contact
  * Requires at least: 5.8
@@ -23,11 +23,12 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('KNK_FLOATING_CONTACT_VERSION', '1.2.0');
+define('KNK_FLOATING_CONTACT_VERSION', '1.3.0');
 define('KNK_FLOATING_CONTACT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KNK_FLOATING_CONTACT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 require_once KNK_FLOATING_CONTACT_PLUGIN_DIR . 'includes/class-svg.php';
+require_once KNK_FLOATING_CONTACT_PLUGIN_DIR . 'includes/class-design.php';
 require_once KNK_FLOATING_CONTACT_PLUGIN_DIR . 'includes/class-github-updater.php';
 new KNK_Floating_Contact_GitHub_Updater(__FILE__);
 
@@ -94,7 +95,8 @@ class KNK_Floating_Contact {
             return;
         }
 
-        echo '<div id="knk-floating-contact">';
+        $design = KNK_Floating_Contact_Design::style();
+        echo '<div id="knk-floating-contact"' . ($design !== '' ? ' style="' . esc_attr($design) . '"' : '') . '>';
 
         // Email icon
         if ($show_email) {
@@ -103,7 +105,7 @@ class KNK_Floating_Contact {
             echo '<div class="knk-floating-icon">';
             if (!empty($email_svg)) {
                 // Also sanitize existing stored icons at the output boundary.
-                echo KNK_Floating_Contact_SVG::sanitize($email_svg);
+                echo KNK_Floating_Contact_Design::svg($email_svg);
             } else {
                 echo '<span>📧</span>';
             }
@@ -121,7 +123,7 @@ class KNK_Floating_Contact {
             echo '<div class="knk-floating-icon">';
             if (!empty($phone_svg)) {
                 // Also sanitize existing stored icons at the output boundary.
-                echo KNK_Floating_Contact_SVG::sanitize($phone_svg);
+                echo KNK_Floating_Contact_Design::svg($phone_svg);
             } else {
                 echo '<span>📞</span>';
             }
@@ -138,7 +140,7 @@ class KNK_Floating_Contact {
             echo '<div class="knk-floating-icon">';
             if (!empty($booking_svg)) {
                 // Also sanitize existing stored icons at the output boundary.
-                echo KNK_Floating_Contact_SVG::sanitize($booking_svg);
+                echo KNK_Floating_Contact_Design::svg($booking_svg);
             } else {
                 echo '<span>📅</span>';
             }

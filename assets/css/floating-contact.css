@@ -46,7 +46,7 @@
   align-items: center;
   text-decoration: none;
   background: #ffffff;
-  border-radius: 0;
+  border-radius: var(--knk-contact-radius, 0px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), min-width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.4s ease, box-shadow 0.4s ease, padding 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
   overflow: hidden;
@@ -109,8 +109,8 @@
 }
 
 .knk-floating-email .knk-floating-link {
-  background-color: #6C1300;
-  color: white;
+  background-color: var(--knk-contact-background, #6C1300);
+  color: var(--knk-contact-text, #ffffff);
 }
 @media (min-width: 769px) {
   .knk-floating-email .knk-floating-link:hover {
@@ -118,7 +118,7 @@
     padding-right: 20px;
     transform: translateX(-5px);
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-    background-color: #74675C;
+    background-color: var(--knk-contact-hover-background, #74675C);
   }
   .knk-floating-email .knk-floating-link:hover .knk-floating-text {
     opacity: 1;
@@ -133,12 +133,12 @@
 }
 .knk-floating-email .knk-floating-icon,
 .knk-floating-email .knk-floating-text {
-  color: white;
+  color: var(--knk-contact-text, #ffffff);
 }
 
 .knk-floating-phone .knk-floating-link {
-  background-color: #6C1300;
-  color: white;
+  background-color: var(--knk-contact-background, #6C1300);
+  color: var(--knk-contact-text, #ffffff);
 }
 @media (min-width: 769px) {
   .knk-floating-phone .knk-floating-link:hover {
@@ -146,7 +146,7 @@
     padding-right: 20px;
     transform: translateX(-5px);
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-    background-color: #74675C;
+    background-color: var(--knk-contact-hover-background, #74675C);
   }
   .knk-floating-phone .knk-floating-link:hover .knk-floating-text {
     opacity: 1;
@@ -161,12 +161,12 @@
 }
 .knk-floating-phone .knk-floating-icon,
 .knk-floating-phone .knk-floating-text {
-  color: white;
+  color: var(--knk-contact-text, #ffffff);
 }
 
 .knk-floating-booking .knk-floating-link {
-  background-color: #6C1300;
-  color: white;
+  background-color: var(--knk-contact-background, #6C1300);
+  color: var(--knk-contact-text, #ffffff);
 }
 @media (min-width: 769px) {
   .knk-floating-booking .knk-floating-link:hover {
@@ -174,7 +174,7 @@
     padding-right: 20px;
     transform: translateX(-5px);
     box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-    background-color: #74675C;
+    background-color: var(--knk-contact-hover-background, #74675C);
   }
   .knk-floating-booking .knk-floating-link:hover .knk-floating-text {
     opacity: 1;
@@ -189,5 +189,13 @@
 }
 .knk-floating-booking .knk-floating-icon,
 .knk-floating-booking .knk-floating-text {
-  color: white;
-}/*# sourceMappingURL=floating-contact.css.map */
+  color: var(--knk-contact-text, #ffffff);
+}
+
+.knk-floating-email .knk-floating-icon,
+.knk-floating-phone .knk-floating-icon,
+.knk-floating-booking .knk-floating-icon {
+  color: var(--knk-contact-icon, #ffffff);
+}
+
+/*# sourceMappingURL=floating-contact.css.map */
