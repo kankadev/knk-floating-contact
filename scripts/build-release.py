@@ -12,10 +12,12 @@ files=['knk-floating-contact.php','uninstall.php','readme.txt','LICENSE']
 files+=sorted(p.relative_to(root).as_posix() for d in ('assets','includes') for p in (root/d).rglob('*') if p.is_file())
 out=root/'dist';out.mkdir(exist_ok=True)
 target=out/f'knk-floating-contact-{version}.zip'
-with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile(target,'w',zipfile.ZIP_STORED) as z:
     for name in files:
         info=zipfile.ZipInfo('knk-floating-contact/'+name,date_time=(2026,1,1,0,0,0))
-        info.compress_type=zipfile.ZIP_DEFLATED
+        info.create_system=3
+        # This small package is stored to avoid platform/zlib-dependent output.
+        info.compress_type=zipfile.ZIP_STORED
         info.external_attr=0o100644<<16
         z.writestr(info,(root/name).read_bytes().replace(b'\r\n', b'\n'))
 with zipfile.ZipFile(target) as z:
