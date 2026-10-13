@@ -1,3 +1,8 @@
+# 1.3.1
+
+- Sichtbare Kontakt-Icons rücken ohne Leerplätze zusammen und bleiben als Gruppe vertikal zentriert.
+- Desktop und Mobil behalten die bisherigen Größen und 15 px Abstand. Einstellungen bleiben unverändert.
+
 # 1.3.0
 
 - Updatesichere Designoptionen für Hintergrund, Hover-Hintergrund, Textfarbe,

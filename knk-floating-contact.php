@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KNK Floating Contact
  * Description: Floating contact icons for email and phone with hover effects
- * Version: 1.3.0
+ * Version: 1.3.1
  * Plugin URI: https://github.com/kankadev/knk-floating-contact
  * Update URI: https://github.com/kankadev/knk-floating-contact
  * Requires at least: 5.8
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('KNK_FLOATING_CONTACT_VERSION', '1.3.0');
+define('KNK_FLOATING_CONTACT_VERSION', '1.3.1');
 define('KNK_FLOATING_CONTACT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KNK_FLOATING_CONTACT_PLUGIN_URL', plugin_dir_url(__FILE__));
 

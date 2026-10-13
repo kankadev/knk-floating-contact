@@ -15,40 +15,22 @@ $icon-size-mobile: 50px;
     transform: translateY(50%);
     z-index: 9999;
     width: 60px;
-    height: 210px; // Space for all three icons
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
 
     // Responsive adjustments
     @media (max-width: 768px) {
         right: 15px;
         width: 50px;
-        height: 180px; // Smaller space for mobile
+
     }
 }
 
 .knk-floating-item {
-    position: absolute;
-    right: 0;
+    flex: 0 0 auto;
     transition: $transition;
-    
-    &.knk-floating-email {
-        top: 0;
-    }
-    
-    &.knk-floating-phone {
-        top: 75px; // Icon height + gap
-        
-        @media (max-width: 768px) {
-            top: 65px; // Smaller gap for mobile
-        } 
-    }
-    
-    &.knk-floating-booking {
-        top: 150px; // Third icon position
-        
-        @media (max-width: 768px) {
-            top: 130px; // Smaller gap for mobile
-        }
-    }
 }
 
 .knk-floating-link {

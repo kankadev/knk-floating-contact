@@ -91,3 +91,5 @@ ein eigenes Erweiterungsplugin, nicht in diesen Plugin-Ordner.
 
 Der Footer der Einstellungsseite zeigt einen Link zu kanka.dev und die tatsächlich
 geladene Plugin-Version. Er lädt keine externen Schriftarten, Bilder oder Skripte.
+
+Ab 1.3.1 bilden ausschließlich sichtbare Kontakte eine vertikal zentrierte Gruppe mit 15 px Abstand. Deaktivierte Kontakte hinterlassen keine Leerplätze.
