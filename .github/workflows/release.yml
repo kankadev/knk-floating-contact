@@ -1,0 +1,57 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'New stable tag, for example v1.1.1'
+        required: true
+        type: string
+      commit:
+        description: 'Full reviewed commit SHA already on main'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: plugin-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    env:
+      TAG: ${{ inputs.tag }}
+      COMMIT: ${{ inputs.commit }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.commit }}
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: PHP syntax
+        run: find . -name '*.php' -not -path './.test-wordpress/*' -print0 | xargs -0 -n1 php -l
+      - name: Test against WordPress
+        run: |
+          curl --fail --silent --show-error --location https://wordpress.org/latest.tar.gz -o /tmp/wordpress.tar.gz
+          mkdir .test-wordpress
+          tar -xzf /tmp/wordpress.tar.gz -C .test-wordpress --strip-components=1
+          php tests/run.php .test-wordpress
+          php tests/uninstall-multisite.php
+      - name: Verify reviewed release target
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$COMMIT"
+          git merge-base --is-ancestor "$COMMIT" origin/main
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+            echo 'Tag already exists; refusing to replace it.'
+            exit 1
+          fi
+      - name: Build release ZIP
+        run: python3 scripts/build-release.py "$TAG"
+      - name: Create draft with installable ZIP and checksum
+        run: gh release create "$TAG" "dist/knk-floating-contact-${TAG#v}.zip" dist/SHA256SUMS --target "$COMMIT" --title "$TAG" --notes-file CHANGELOG.md --draft

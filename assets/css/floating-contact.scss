@@ -1,0 +1,232 @@
+/* KNK Floating Contact Styles - Desktop Hover Expansion */
+
+// Variables
+$primary-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+$hover-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+$transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+$width-transition: width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), min-width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+$icon-size: 60px;
+$icon-size-mobile: 50px;
+
+#knk-floating-contact {
+    position: fixed;
+    right: 20px;
+    bottom: 50%;
+    transform: translateY(50%);
+    z-index: 9999;
+    width: 60px;
+    height: 210px; // Space for all three icons
+
+    // Responsive adjustments
+    @media (max-width: 768px) {
+        right: 15px;
+        width: 50px;
+        height: 180px; // Smaller space for mobile
+    }
+}
+
+.knk-floating-item {
+    position: absolute;
+    right: 0;
+    transition: $transition;
+    
+    &.knk-floating-email {
+        top: 0;
+    }
+    
+    &.knk-floating-phone {
+        top: 75px; // Icon height + gap
+        
+        @media (max-width: 768px) {
+            top: 65px; // Smaller gap for mobile
+        } 
+    }
+    
+    &.knk-floating-booking {
+        top: 150px; // Third icon position
+        
+        @media (max-width: 768px) {
+            top: 130px; // Smaller gap for mobile
+        }
+    }
+}
+
+.knk-floating-link {
+    display: flex;
+    align-items: center; 
+    text-decoration: none;
+    background: #ffffff;
+    border-radius: 0;
+    box-shadow: $primary-shadow;
+    transition: $width-transition, transform 0.4s ease, box-shadow 0.4s ease, padding 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+    width: $icon-size;
+    height: $icon-size;
+    padding: 0;
+    cursor: pointer;
+
+    // Mobile - simple scale effect only
+    @media (max-width: 768px) {
+        width: $icon-size-mobile;
+        height: $icon-size-mobile;
+        justify-content: center;
+    }
+}
+
+.knk-floating-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $icon-size;
+    height: $icon-size;
+    flex-shrink: 0;
+    font-size: 24px;
+    color: #333;
+
+    svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+
+        // Responsive SVG adjustments
+        @media (max-width: 768px) {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    // Responsive adjustments
+    @media (max-width: 768px) {
+        width: $icon-size-mobile;
+        height: $icon-size-mobile;
+        font-size: 20px;
+    }
+}
+
+.knk-floating-text {
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: $transition;
+    margin-left: 6px;
+
+    // Hide on mobile completely
+    @media (max-width: 768px) {
+        display: none;
+    }
+}
+
+// Email specific styles 
+.knk-floating-email {
+    .knk-floating-link {
+        background-color: #6C1300;
+        color: white;
+
+        // Desktop hover effects only for email
+        @media (min-width: 769px) {
+            &:hover {
+                width: 290px;
+                padding-right: 20px;
+                transform: translateX(-5px);
+                box-shadow: $hover-shadow; 
+                background-color: #74675C;
+         
+                .knk-floating-text {
+                    opacity: 1;
+                    transform: translateX(0);
+                    transition-delay: 0.2s;
+                }
+            }
+        } 
+
+        // Mobile hover effect for email
+        @media (max-width: 768px) {
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    .knk-floating-icon,
+    .knk-floating-text {
+        color: white;
+    } 
+}
+
+// Phone specific styles
+.knk-floating-phone {
+    .knk-floating-link {
+        background-color: #6C1300; 
+        color: white;
+
+        // Desktop hover effects only for phone
+        @media (min-width: 769px) {
+            &:hover {
+                width: 290px;
+                padding-right: 20px;
+                transform: translateX(-5px);
+                box-shadow: $hover-shadow;
+                background-color: #74675C;
+         
+                .knk-floating-text {
+                    opacity: 1;
+                    transform: translateX(0);
+                    transition-delay: 0.2s;
+                }
+            }
+        }
+
+        // Mobile hover effect for phone
+        @media (max-width: 768px) {
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    } 
+
+    .knk-floating-icon,
+    .knk-floating-text { 
+        color: white;
+    }
+}
+
+// Booking specific styles
+.knk-floating-booking {
+    .knk-floating-link {
+        background-color: #6C1300; // Same color for consistency
+        color: white;
+
+        // Desktop hover effects only for booking
+        @media (min-width: 769px) {
+            &:hover {
+                width: 290px;
+                padding-right: 20px;
+                transform: translateX(-5px);
+                box-shadow: $hover-shadow;
+                background-color: #74675C;
+         
+                .knk-floating-text {
+                    opacity: 1;
+                    transform: translateX(0);
+                    transition-delay: 0.2s;
+                }
+            }
+        }
+
+        // Mobile hover effect for booking
+        @media (max-width: 768px) {
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    } 
+
+    .knk-floating-icon,
+    .knk-floating-text { 
+        color: white;
+    }
+}
+ 

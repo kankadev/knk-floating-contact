@@ -1,0 +1,193 @@
+/* KNK Floating Contact Styles - Desktop Hover Expansion */
+#knk-floating-contact {
+  position: fixed;
+  right: 20px;
+  bottom: 50%;
+  transform: translateY(50%);
+  z-index: 9999;
+  width: 60px;
+  height: 210px;
+}
+@media (max-width: 768px) {
+  #knk-floating-contact {
+    right: 15px;
+    width: 50px;
+    height: 180px;
+  }
+}
+
+.knk-floating-item {
+  position: absolute;
+  right: 0;
+  transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.knk-floating-item.knk-floating-email {
+  top: 0;
+}
+.knk-floating-item.knk-floating-phone {
+  top: 75px;
+}
+@media (max-width: 768px) {
+  .knk-floating-item.knk-floating-phone {
+    top: 65px;
+  }
+}
+.knk-floating-item.knk-floating-booking {
+  top: 150px;
+}
+@media (max-width: 768px) {
+  .knk-floating-item.knk-floating-booking {
+    top: 130px;
+  }
+}
+
+.knk-floating-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), min-width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.4s ease, box-shadow 0.4s ease, padding 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow: hidden;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .knk-floating-link {
+    width: 50px;
+    height: 50px;
+    justify-content: center;
+  }
+}
+
+.knk-floating-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  font-size: 24px;
+  color: #333;
+}
+.knk-floating-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+@media (max-width: 768px) {
+  .knk-floating-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .knk-floating-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+.knk-floating-text {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+  margin-left: 6px;
+}
+@media (max-width: 768px) {
+  .knk-floating-text {
+    display: none;
+  }
+}
+
+.knk-floating-email .knk-floating-link {
+  background-color: #6C1300;
+  color: white;
+}
+@media (min-width: 769px) {
+  .knk-floating-email .knk-floating-link:hover {
+    width: 290px;
+    padding-right: 20px;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    background-color: #74675C;
+  }
+  .knk-floating-email .knk-floating-link:hover .knk-floating-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.2s;
+  }
+}
+@media (max-width: 768px) {
+  .knk-floating-email .knk-floating-link:hover {
+    transform: scale(1.05);
+  }
+}
+.knk-floating-email .knk-floating-icon,
+.knk-floating-email .knk-floating-text {
+  color: white;
+}
+
+.knk-floating-phone .knk-floating-link {
+  background-color: #6C1300;
+  color: white;
+}
+@media (min-width: 769px) {
+  .knk-floating-phone .knk-floating-link:hover {
+    width: 290px;
+    padding-right: 20px;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    background-color: #74675C;
+  }
+  .knk-floating-phone .knk-floating-link:hover .knk-floating-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.2s;
+  }
+}
+@media (max-width: 768px) {
+  .knk-floating-phone .knk-floating-link:hover {
+    transform: scale(1.05);
+  }
+}
+.knk-floating-phone .knk-floating-icon,
+.knk-floating-phone .knk-floating-text {
+  color: white;
+}
+
+.knk-floating-booking .knk-floating-link {
+  background-color: #6C1300;
+  color: white;
+}
+@media (min-width: 769px) {
+  .knk-floating-booking .knk-floating-link:hover {
+    width: 290px;
+    padding-right: 20px;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    background-color: #74675C;
+  }
+  .knk-floating-booking .knk-floating-link:hover .knk-floating-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.2s;
+  }
+}
+@media (max-width: 768px) {
+  .knk-floating-booking .knk-floating-link:hover {
+    transform: scale(1.05);
+  }
+}
+.knk-floating-booking .knk-floating-icon,
+.knk-floating-booking .knk-floating-text {
+  color: white;
+}/*# sourceMappingURL=floating-contact.css.map */
